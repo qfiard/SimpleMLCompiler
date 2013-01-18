@@ -4,3 +4,5 @@ module type Parser = sig
         
         end
 end;;
+
+module MLParser : Parser;;
