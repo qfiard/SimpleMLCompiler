@@ -1,0 +1,9 @@
+#!/bin/sh
+
+# Uncomment these lines if various libraries are required (num and str in this example)
+#$ cat _tags
+#<*.ml> or "prog.byte": package(num), package(str)
+
+
+# We can now build the program
+ocamlbuild  -use-ocamlfind src/SimpleMLCompiler.native
