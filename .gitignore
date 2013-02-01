@@ -12,3 +12,6 @@
 _build/
 *.native
 *.byte
+
+.paths
+*.snapshot

@@ -1,4 +1,0 @@
-class parser =
-    object
-    
-    end;;

@@ -1,0 +1,5 @@
+#!/bin/sh
+
+# This uses the file _tags to find dependencies
+
+ocamlbuild -r -I syntax -use-ocamlfind SimpleMLCompiler.native

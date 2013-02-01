@@ -1,0 +1,4 @@
+"syntax/ML_syntax.cmx": for-pack(Syntax)
+"utilities/UserInterface.cmx": for-pack(Utilities)
+"lexer/Lexer.cmx": for-pack(Lexer)
+"parser/Parser.cmx": for-pack(Parser)

@@ -1,0 +1,620 @@
+   0  $accept : %entry% $end
+
+   1  program : expression EOF
+
+   2  expression_with_parentheses : LPAREN expression RPAREN
+
+   3  leaf_node : INT
+   4            | BOOL
+   5            | ID
+
+   6  function_call : ID leaf_node
+   7                | expression_with_parentheses expression
+
+   8  expression : FUN ID ARROW expression
+   9             | LET ID EQ expression IN expression
+  10             | LET REC ID ID EQ expression IN expression
+  11             | function_call
+  12             | expression_with_parentheses
+  13             | expression PLUS expression
+  14             | expression TIMES expression
+  15             | expression MINUS expression
+  16             | expression DIV expression
+  17             | expression AND expression
+  18             | expression OR expression
+
+  19  %entry% : '\001' program
+
+state 0
+	$accept : . %entry% $end  (0)
+
+	'\001'  shift 1
+	.  error
+
+	%entry%  goto 2
+
+
+state 1
+	%entry% : '\001' . program  (19)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	program  goto 7
+	expression  goto 8
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 2
+	$accept : %entry% . $end  (0)
+
+	$end  accept
+
+
+state 3
+	expression_with_parentheses : LPAREN . expression RPAREN  (2)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 11
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 4
+	function_call : ID . leaf_node  (6)
+
+	ID  shift 12
+	INT  shift 13
+	BOOL  shift 14
+	.  error
+
+	leaf_node  goto 15
+
+
+state 5
+	expression : LET . ID EQ expression IN expression  (9)
+	expression : LET . REC ID ID EQ expression IN expression  (10)
+
+	ID  shift 16
+	REC  shift 17
+	.  error
+
+
+state 6
+	expression : FUN . ID ARROW expression  (8)
+
+	ID  shift 18
+	.  error
+
+
+state 7
+	%entry% : '\001' program .  (19)
+
+	.  reduce 19
+
+
+state 8
+	program : expression . EOF  (1)
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	AND  shift 19
+	OR  shift 20
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	EOF  shift 25
+	.  error
+
+
+state 9
+	function_call : expression_with_parentheses . expression  (7)
+	expression : expression_with_parentheses .  (12)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	RPAREN  reduce 12
+	AND  reduce 12
+	OR  reduce 12
+	PLUS  reduce 12
+	MINUS  reduce 12
+	TIMES  reduce 12
+	DIV  reduce 12
+	IN  reduce 12
+	EOF  reduce 12
+
+	expression  goto 26
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 10
+	expression : function_call .  (11)
+
+	.  reduce 11
+
+
+state 11
+	expression_with_parentheses : LPAREN expression . RPAREN  (2)
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	RPAREN  shift 27
+	AND  shift 19
+	OR  shift 20
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	.  error
+
+
+state 12
+	leaf_node : ID .  (5)
+
+	.  reduce 5
+
+
+state 13
+	leaf_node : INT .  (3)
+
+	.  reduce 3
+
+
+state 14
+	leaf_node : BOOL .  (4)
+
+	.  reduce 4
+
+
+state 15
+	function_call : ID leaf_node .  (6)
+
+	.  reduce 6
+
+
+state 16
+	expression : LET ID . EQ expression IN expression  (9)
+
+	EQ  shift 28
+	.  error
+
+
+state 17
+	expression : LET REC . ID ID EQ expression IN expression  (10)
+
+	ID  shift 29
+	.  error
+
+
+state 18
+	expression : FUN ID . ARROW expression  (8)
+
+	ARROW  shift 30
+	.  error
+
+
+state 19
+	expression : expression AND . expression  (17)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 31
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 20
+	expression : expression OR . expression  (18)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 32
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 21
+	expression : expression PLUS . expression  (13)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 33
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 22
+	expression : expression MINUS . expression  (15)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 34
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 23
+	expression : expression TIMES . expression  (14)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 35
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 24
+	expression : expression DIV . expression  (16)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 36
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 25
+	program : expression EOF .  (1)
+
+	.  reduce 1
+
+
+state 26
+	function_call : expression_with_parentheses expression .  (7)
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	AND  shift 19
+	OR  shift 20
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	RPAREN  reduce 7
+	IN  reduce 7
+	EOF  reduce 7
+
+
+state 27
+	expression_with_parentheses : LPAREN expression RPAREN .  (2)
+
+	.  reduce 2
+
+
+state 28
+	expression : LET ID EQ . expression IN expression  (9)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 37
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 29
+	expression : LET REC ID . ID EQ expression IN expression  (10)
+
+	ID  shift 38
+	.  error
+
+
+state 30
+	expression : FUN ID ARROW . expression  (8)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 39
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 31
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression AND expression .  (17)
+	expression : expression . OR expression  (18)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	RPAREN  reduce 17
+	AND  reduce 17
+	OR  reduce 17
+	IN  reduce 17
+	EOF  reduce 17
+
+
+state 32
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+	expression : expression OR expression .  (18)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	RPAREN  reduce 18
+	AND  reduce 18
+	OR  reduce 18
+	IN  reduce 18
+	EOF  reduce 18
+
+
+state 33
+	expression : expression . PLUS expression  (13)
+	expression : expression PLUS expression .  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	TIMES  shift 23
+	DIV  shift 24
+	RPAREN  reduce 13
+	AND  reduce 13
+	OR  reduce 13
+	PLUS  reduce 13
+	MINUS  reduce 13
+	IN  reduce 13
+	EOF  reduce 13
+
+
+state 34
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression MINUS expression .  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	TIMES  shift 23
+	DIV  shift 24
+	RPAREN  reduce 15
+	AND  reduce 15
+	OR  reduce 15
+	PLUS  reduce 15
+	MINUS  reduce 15
+	IN  reduce 15
+	EOF  reduce 15
+
+
+state 35
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression TIMES expression .  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	.  reduce 14
+
+
+state 36
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression DIV expression .  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	.  reduce 16
+
+
+state 37
+	expression : LET ID EQ expression . IN expression  (9)
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	AND  shift 19
+	OR  shift 20
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	IN  shift 40
+	.  error
+
+
+state 38
+	expression : LET REC ID ID . EQ expression IN expression  (10)
+
+	EQ  shift 41
+	.  error
+
+
+state 39
+	expression : FUN ID ARROW expression .  (8)
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	AND  shift 19
+	OR  shift 20
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	RPAREN  reduce 8
+	IN  reduce 8
+	EOF  reduce 8
+
+
+state 40
+	expression : LET ID EQ expression IN . expression  (9)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 42
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 41
+	expression : LET REC ID ID EQ . expression IN expression  (10)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 43
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 42
+	expression : LET ID EQ expression IN expression .  (9)
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	AND  shift 19
+	OR  shift 20
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	RPAREN  reduce 9
+	IN  reduce 9
+	EOF  reduce 9
+
+
+state 43
+	expression : LET REC ID ID EQ expression . IN expression  (10)
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	AND  shift 19
+	OR  shift 20
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	IN  shift 44
+	.  error
+
+
+state 44
+	expression : LET REC ID ID EQ expression IN . expression  (10)
+
+	LPAREN  shift 3
+	ID  shift 4
+	LET  shift 5
+	FUN  shift 6
+	.  error
+
+	expression  goto 45
+	expression_with_parentheses  goto 9
+	function_call  goto 10
+
+
+state 45
+	expression : LET REC ID ID EQ expression IN expression .  (10)
+	expression : expression . PLUS expression  (13)
+	expression : expression . TIMES expression  (14)
+	expression : expression . MINUS expression  (15)
+	expression : expression . DIV expression  (16)
+	expression : expression . AND expression  (17)
+	expression : expression . OR expression  (18)
+
+	AND  shift 19
+	OR  shift 20
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIV  shift 24
+	RPAREN  reduce 10
+	IN  reduce 10
+	EOF  reduce 10
+
+
+22 terminals, 7 nonterminals
+20 grammar rules, 46 states
