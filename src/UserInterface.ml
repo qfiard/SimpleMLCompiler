@@ -9,19 +9,25 @@ let op_to_string = function
     | And -> "&&"
     | Or -> "||";;
 
+let print_var = function
+    | (s,i) -> printf "(%s,%d)" s i
+
+let print_var_def = function
+    | (s,i) -> printf "%s" s
+
 let print_const = function
     | Int c -> printf "%d" c
     | Bool true -> printf "true"
     | Bool false -> printf "false"
-    | Id s -> printf "%s" s;;
+    | Var v -> print_var v;;
 
 let rec outputProgramWithIndentLevel indent = function
     | Local(s,e,scope) ->
         output_local indent s e scope
-    | RecFun(fun_name,arg_name,body,scope) ->
-        output_rec_fun indent fun_name arg_name body scope
-    | Fun(arg_name,body) ->
-        output_fun indent indent arg_name body
+    | RecFun(f,arg,body,scope) ->
+        output_rec_fun indent f arg body scope
+    | Fun(arg,body) ->
+        output_fun indent indent arg body
     | Eval(e1,e2) ->
         output_eval indent e1 e2
     | Binary(op,e1,e2) ->
@@ -44,27 +50,42 @@ and outputWithParen indent e =
         printf "\n%s)" indent;
 and output_local indent s e scope =
     let incr_indent = indent^"\t" in
-    printf "%slet %s =\n" indent s;
-    outputProgramWithIndentLevel incr_indent e;
-    printf "\n%sin\n" indent;
+    printf "%slet %s =" indent s;
+    begin
+    match e with
+    | Const c ->
+        printf " ";
+        print_const c;
+    | _ ->
+        printf "\n%sbegin" indent;
+        outputProgramWithIndentLevel incr_indent e;
+        printf "\n%send" indent;
+    end;
+    printf " in\n";
     outputProgramWithIndentLevel incr_indent scope
-and output_rec_fun indent fun_name arg_name body scope =
+and output_rec_fun indent f arg body scope =
     let incr_indent = indent^"\t" in
-    printf "%slet rec %s %s =\n" indent fun_name arg_name;
+    printf "%slet rec %s %s =\n" indent f arg;
     outputProgramWithIndentLevel incr_indent body;
     printf "\n%sin\n" indent;
     outputProgramWithIndentLevel incr_indent scope
-and output_fun indent indent arg_name body =
+and output_fun indent indent arg body =
     let incr_indent = indent^"\t" in
-    printf "%sfun %s ->\n" indent arg_name;
+    printf "%sfun %s ->\n" indent arg;
     outputProgramWithIndentLevel incr_indent body
 and output_eval indent e1 e2 =
     let incr_indent = indent^"\t" in
     printf "%s" indent;
-    outputWithParen indent e1;
+    begin
+    match e1 with
+    | Const c1 ->
+        print_const c1;
+        printf " ";
+    | _ -> outputWithParen indent e1;
+    end;
     match e2 with
-    | Binary _ -> outputProgramWithIndentLevel incr_indent e2;
-    | Const c -> print_const c;
+    | Const c2 ->
+        print_const c2;
     | _ -> outputWithParen indent e2
 and output_binary indent op e1 e2 =
     printf "%s" indent;

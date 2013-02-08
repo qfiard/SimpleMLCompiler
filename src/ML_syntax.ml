@@ -1,21 +1,23 @@
 type op = Plus | Minus | Times | Div | And | Or
 
-type var = string
+type dbindex = int
 
-type const = Int of int | Bool of bool | Id of var
+type var = string*dbindex
+
+type const = Int of int | Bool of bool | Var of var
 
 type expression =
     (* Local variable definition *)
-      Local of     var    (* Variable name *)
+      Local of     string    (* Variable name *)
                 *  expression       (* Expression to assign *)
                 *  expression       (* Scope *)
     (* Definition of a local recursive function with one argument *)
-    | RecFun of    var           (* Function name *)
-                *  var           (* Argument identifier *)
+    | RecFun of    string           (* Function name *)
+                *  string           (* Argument identifier *)
                 *  expression       (* Fonction body *)
                 *  expression       (* Scope *)
     (* Definition of an anonymous function with one argument *)
-    | Fun of    var              (* Argument identifier *)
+    | Fun of    string              (* Argument identifier *)
              *  expression          (* Fonction body *)
     (* Functional evaluation *)
     | Eval of    expression         (* Function *)

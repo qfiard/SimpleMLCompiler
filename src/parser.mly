@@ -43,11 +43,12 @@ expression_with_parentheses:
 leaf_node:
     BOOL  { Const (Bool $1) }
   | INT { Const (Int $1) }
-  | ID { Const (Id $1) }
+  | ID { Const (Var ($1,0)) }
 ;
 function_call:
-    ID leaf_node { Eval(Const (Id $1),$2) }
-  | expression_with_parentheses expression { Eval($1,$2) } %prec FUNCTION_CALL
+    ID leaf_node { Eval(Const (Var($1,0)),$2) }
+  | expression expression expression { Eval($1,$2) } %prec FUNCTION_CALL
+  | expression expression { Eval($1,$2) } %prec FUNCTION_CALL
 ;
 expression:
   | leaf_node { $1 }

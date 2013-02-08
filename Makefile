@@ -1,5 +1,5 @@
 all:
-	-@cd src; \
+	@cd src; \
 	./compile; \
 	rm ../*.native 2>/dev/null; \
 	mv *.native ../. 2>/dev/null
