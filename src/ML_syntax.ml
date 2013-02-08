@@ -22,4 +22,8 @@ type expression =
     | Binary of    op        (* Operator *)
                  * expression       (* First operand *)
                  * expression       (* Second operand *)
+    (* Conditional *)
+    | If of        expression       (* Condition *)
+                 * expression       (* Executed if condition is true *)
+                 * expression       (* Executed if condition is false *)
     | Const of const         (* Constant *)

@@ -26,12 +26,22 @@ let rec outputProgramWithIndentLevel indent = function
         output_eval indent e1 e2
     | Binary(op,e1,e2) ->
         output_binary indent op e1 e2
-    | Const c -> print_const c
+    | If(cond,e1,e2) ->
+        output_cond indent cond e1 e2
+    | Const c -> 
+        printf "%s" indent;
+        print_const c
 and outputWithParen indent e =
     let incr_indent = indent^"\t" in
-    printf "(\n";
-    outputProgramWithIndentLevel incr_indent e;
-    printf "\n%s)" indent;
+    match e with
+    | Const c ->
+        printf "(";
+        print_const c;
+        printf ")"
+    | _ ->
+        printf "(\n";
+        outputProgramWithIndentLevel incr_indent e;
+        printf "\n%s)" indent;
 and output_local indent s e scope =
     let incr_indent = indent^"\t" in
     printf "%slet %s =\n" indent s;
@@ -70,7 +80,16 @@ and output_binary indent op e1 e2 =
         | Const c2 ->
             print_const c2;
         | _ -> outputWithParen indent e2
-    end;;
+    end
+and output_cond indent cond e1 e2 =
+    let incr_indent = indent^"\t" in
+    printf "%sif" indent;
+    outputWithParen incr_indent cond;
+    printf "\n%sthen\n%sbegin\n" indent indent;
+    outputProgramWithIndentLevel incr_indent e1;
+    printf "\n%send\n%selse\n%sbegin\n" indent indent indent;
+    outputProgramWithIndentLevel incr_indent e2;
+    printf "\n%send" indent;;
 
 let outputProgram p =
     printf "Compiled program :\n";

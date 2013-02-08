@@ -21,9 +21,29 @@ let print_file f : unit =
     seek_in f 0;
     aux_print_file f true in
     
+(* Pass 1 *)
+(* We transform boolean operators into conditionnal expressions *)
+    
+let rec binaryBoolOpToCond = function
+    | Local(id,e,scope) -> Local(id,binaryBoolOpToCond e,binaryBoolOpToCond scope)
+    | RecFun(id,arg,body,scope) ->
+        RecFun(id,arg,binaryBoolOpToCond body,binaryBoolOpToCond scope)
+    | Fun(arg,body) -> Fun(arg,binaryBoolOpToCond body)
+    | Eval(e1,e2) -> Eval(binaryBoolOpToCond e1,binaryBoolOpToCond e2)
+    | Binary(op,e1,e2) when op==And ->
+        If(binaryBoolOpToCond e1,binaryBoolOpToCond e2,Const (Bool false))
+    | Binary(op,e1,e2) when op==Or ->
+        If(binaryBoolOpToCond e1,Const (Bool true),binaryBoolOpToCond e2)
+    | Binary(op,e1,e2) -> Binary(op,binaryBoolOpToCond e1,binaryBoolOpToCond e2)
+    | _ as ast -> ast
+    in
+
+let pass1 = binaryBoolOpToCond in
+    
 let compile file =
     let lexbuf = Lexing.from_channel file in
     let ast = ref (Parser.program Lexer.token lexbuf) in
+    ast := pass1 !ast;
     !ast in
     
 let p = compile file in
@@ -31,6 +51,3 @@ let p = compile file in
     print_file file;
     printf "\n\n";
     outputProgram p;;
-        
-
-    
