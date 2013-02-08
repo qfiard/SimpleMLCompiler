@@ -1,4 +1,4 @@
-open Syntax.ML_syntax;;
+open ML_syntax;;
 open Printf;;
 
 let op_to_string = function
@@ -66,13 +66,13 @@ and output_binary indent op e1 e2 =
     end;
     printf " %s " (op_to_string op);
     begin
-        match e1 with
-        | Const c1 ->
-            print_const c1;
+        match e2 with
+        | Const c2 ->
+            print_const c2;
         | _ -> outputWithParen indent e2
     end;;
 
 let outputProgram p =
-    printf "Program Start\n";
+    printf "Compiled program :\n";
     outputProgramWithIndentLevel "" p;
-    printf "\nProgram End\n\n";;
+    printf "\n\n";;

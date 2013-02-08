@@ -1,15 +1,29 @@
-open Utilities.UserInterface;;
-open Syntax.ML_syntax;;
+open UserInterface;;
+open ML_syntax;;
 
-open Lexer.Lexer;;
-open Parser.Parser;;
+open Printf;;
+open Pervasives;;
 
-let parse () =
+let file_path = Sys.argv.(1) in
+let file = open_in file_path in
+let lexbuf = Lexing.from_channel file in
+
+let rec aux_print_file f first : unit =
     try
-        let lexbuf = Lexing.from_channel stdin in
-        while true do
-            Parser.input Lexer.token lexbuf
-        done
-     with eof -> exit 0
-    
-let _ = Printexc.print parse ();;
+        if(first)
+        then
+            print_newline();
+        print_string (input_line f);
+        aux_print_file f false
+    with eof ->
+        () in
+
+let print_file f : unit =
+    seek_in f 0;
+    aux_print_file f true in
+        
+let p = Parser.program Lexer.token lexbuf in
+    printf "Input program :";
+    print_file file;
+    printf "\n\n";
+    outputProgram p;;

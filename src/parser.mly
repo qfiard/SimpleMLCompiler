@@ -2,7 +2,7 @@
 (* java_parser.mly *)
 (* syntaxe concrete de Java 1.5 *)
 
-open Syntax.ML_syntax;;
+open ML_syntax;;
 
 let parse_error s = (* Called by the parser function on error *)
     print_endline s;
@@ -50,9 +50,10 @@ function_call:
   | expression_with_parentheses expression { Eval($1,$2) } %prec FUNCTION_CALL
 ;
 expression:
-  | FUN ID ARROW expression  { Fun(Id $2,$4) }
-  | LET ID EQ expression IN expression { Local(Id $2,$4,$6) }
-  | LET REC ID ID EQ expression IN expression { RecFun(Const (Id $3),Const (Id $4),$6,$8) }
+  | leaf_node { $1 }
+  | FUN ID ARROW expression  { Fun($2,$4) }
+  | LET REC ID ID EQ expression IN expression { RecFun($3,$4,$6,$8) }
+  | LET ID EQ expression IN expression { Local($2,$4,$6) }
   | function_call { $1 }
   | expression_with_parentheses { $1 }
   | expression PLUS expression { Binary(Plus,$1,$3) }
