@@ -56,10 +56,19 @@ let rec updateDeBruijnIndexesWithVarMap map ast =
         let newMap = StringMap.add v 0 newMap in
         Local(v,f map e,f newMap scope)
     | RecFun(fname,arg,body,scope) ->
-        let newMap = StringMap.map (fun x -> x+2) map in
-        let newMap = StringMap.add fname 1 newMap in
-        let newMap = StringMap.add arg 0 newMap in
-        RecFun(fname,arg,f newMap body,f newMap scope)
+        let newMap = StringMap.map (fun x -> x+1) map in
+        
+        (* The function can be recursive, thus the function itself has a De Bruijn index in its body *)
+        let newMapForBody = StringMap.map (fun x -> x+1) map in
+        let newMapForBody = StringMap.add fname 0 newMapForBody in
+        let newMapForBody = StringMap.add arg 1 newMapForBody in
+        
+        (* In the scope, the argument is no more defined, only the function has an index *)
+        
+        let newMapForScope = StringMap.add fname 0 newMap in
+        
+        RecFun(fname,arg,f newMapForBody body,f newMapForScope scope)
+        
     | Fun(arg,body) ->
         let newMap = StringMap.map (fun x -> x+1) map in
         let newMap = StringMap.add arg 0 newMap in
