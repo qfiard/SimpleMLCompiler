@@ -74,7 +74,7 @@ and output_fun indent indent arg body =
     printf "%sfun %s ->\n" indent arg;
     outputProgramWithIndentLevel incr_indent body
 and output_eval indent e1 e2 =
-    let incr_indent = indent^"\t" in
+    (* let incr_indent = indent^"\t" in *)
     printf "%s" indent;
     begin
     match e1 with

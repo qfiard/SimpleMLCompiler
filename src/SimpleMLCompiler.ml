@@ -4,6 +4,8 @@ open ML_syntax;;
 open Printf;;
 open Pervasives;;
 
+open Interpreter;;
+
 module StringMap = Map.Make(String);;
 
 let file_path = Sys.argv.(1) in
