@@ -29,7 +29,11 @@ rule token = parse
   | "||" { OR }
   | "(" { LPAREN }
   | ")" { RPAREN }
+  | "if" { IF }
+  | "then" { THEN }
+  | "else" { ELSE }
   | eof  { EOF }
+  | "\n"  { UserInterface.current_line := !(UserInterface.current_line) + 1; token lexbuf }
   | blank { token lexbuf } (* ignore this token *)
   | identifier as id { ID(id) }
   | _ as c { Printf.printf "Unrecognized character: %c\n" c; raise (Failure "") }

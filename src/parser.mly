@@ -2,10 +2,15 @@
 (* java_parser.mly *)
 (* syntaxe concrete de Java 1.5 *)
 
+open Types;;
 open ML_syntax;;
+open Expression;;
+open Printf;;
+
+let current_line = ref 0;;
 
 let parse_error s = (* Called by the parser function on error *)
-    print_endline s;
+    printf "Parse error at line %i\n" (!current_line);
     flush stdout
 
 %}
@@ -20,22 +25,25 @@ let parse_error s = (* Called by the parser function on error *)
 %token FUNCTION_CALL
 
 %token LET REC EQ IN FUN ARROW
+%token IF THEN ELSE
 %token EOF
 
 %nonassoc LET REC EQ IN FUN ARROW
 %nonassoc ID INT BOOL
 %nonassoc FUNCTION_CALL
+%nonassoc IF THEN
+%nonassoc ELSE
 %left AND OR
 %left PLUS MINUS
 %left TIMES DIV
 %nonassoc LPAREN RPAREN
 
 %start program
-%type <ML_syntax.expression> program
+%type <Expression.expression> program
 
 %%
 program:
-    expression EOF { $1 }
+    expression EOF { Raw $1 }
 ;
 expression_with_parentheses:
     LPAREN expression RPAREN { $2 }

@@ -1,5 +1,9 @@
 open ML_syntax;;
 open Printf;;
+open Types;;
+open Expression;;
+
+let current_line = ref 0;;
 
 let op_to_string = function
     | Plus -> "+"
@@ -114,5 +118,7 @@ and output_cond indent cond e1 e2 =
 
 let outputProgram p =
     printf "Compiled program :\n";
-    outputProgramWithIndentLevel "" p;
+    match p with
+    | Raw e -> outputProgramWithIndentLevel "" e
+    | _ -> raise(Failure "Not implemented")
     printf "\n\n";;
