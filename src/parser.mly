@@ -30,12 +30,11 @@ let parse_error s = (* Called by the parser function on error *)
 
 %nonassoc LET REC EQ IN FUN ARROW
 %nonassoc ID INT BOOL
-%nonassoc FUNCTION_CALL
-%nonassoc IF THEN
-%nonassoc ELSE
+%right FUNCTION_CALL
 %left AND OR
 %left PLUS MINUS
 %left TIMES DIV
+%nonassoc IF THEN ELSE
 %nonassoc LPAREN RPAREN
 
 %start program
@@ -48,6 +47,9 @@ program:
 expression_with_parentheses:
     LPAREN expression RPAREN { $2 }
 ;
+if_expression:
+    IF expression THEN expression ELSE expression { If($2,$4,$6) }
+;
 leaf_node:
     BOOL  { Const (Bool $1) }
   | INT { Const (Int $1) }
@@ -58,6 +60,7 @@ function_call:
   | expression expression { Eval($1,$2) } %prec FUNCTION_CALL
 ;
 expression:
+  | if_expression { $1 }
   | leaf_node { $1 }
   | FUN ID ARROW expression  { Fun($2,$4) }
   | LET REC ID ID EQ expression IN expression { RecFun($3,$4,$6,$8) }
