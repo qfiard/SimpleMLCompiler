@@ -55,7 +55,6 @@ leaf_node:
 ;
 function_call:
     ID leaf_node { Eval(Const (Var($1,0)),$2) }
-  | expression expression expression { Eval($1,$2) } %prec FUNCTION_CALL
   | expression expression { Eval($1,$2) } %prec FUNCTION_CALL
 ;
 expression:

@@ -2,4 +2,4 @@
 
 # This uses the file _tags to find dependencies
 
-ocamlbuild -Is syntax,parser,lexer -use-ocamlfind SimpleMLCompiler.native
+ocamlbuild -yaccflags -v -Is syntax,parser,lexer -use-ocamlfind SimpleMLCompiler.native
