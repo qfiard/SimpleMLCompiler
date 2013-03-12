@@ -7,10 +7,8 @@ open ML_syntax;;
 open Expression;;
 open Printf;;
 
-let current_line = ref 0;;
-
 let parse_error s = (* Called by the parser function on error *)
-    printf "Parse error at line %i\n" (!current_line);
+    printf "Parse error";
     flush stdout
 
 %}

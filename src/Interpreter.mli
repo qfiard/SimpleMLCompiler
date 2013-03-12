@@ -1,6 +1,6 @@
-open DeBruijnExpression
-
-type value = ConstVal of const | FunVal of expression
+type value = ConstVal of DeBruijnExpression.const | FunVal of Expression.expression
 type state = value list
 
-val interpret : expression -> value
+val interpret_DBE : DeBruijnExpression.expression -> value
+
+val interpret : Expression.expression -> value

@@ -3,8 +3,6 @@ open Printf;;
 open Types;;
 open Expression;;
 
-let current_line = ref 0;;
-
 let op_to_string = function
     | Plus -> "+"
     | Minus -> "-"
@@ -122,3 +120,13 @@ let outputProgram p =
     | Raw e -> outputProgramWithIndentLevel "" e
     | _ -> raise(Failure "Not implemented")
     printf "\n\n";;
+
+let print_dbe_const = function
+    | DeBruijnExpression.Int c -> printf "Integer : %d" c
+    | DeBruijnExpression.Bool true -> printf "Boolean : true"
+    | DeBruijnExpression.Bool false -> printf "Boolean : false"
+    | DeBruijnExpression.Var v -> printf "Variable : %d" v;;
+
+let outputValue = function
+    | Interpreter.ConstVal c -> print_dbe_const c
+    | Interpreter.FunVal f -> printf "Function : "; outputProgram f;;

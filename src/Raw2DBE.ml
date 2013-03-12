@@ -2,6 +2,18 @@ open ML_syntax;;
 
 module StringMap = Map.Make(String);;
 
+(* updateDeBruijnIndexesWithVarMap computes De Bruijn indexes for the variables in ast *)
+(* given the current association between variables and indexes. *)
+(* This function proceeds as follow :*)
+(* Whenever a variable is encountered, we check it is in map. If yes, we replace this variable *)
+(* by its index in map, if no we throw an exception : the variable is not defined. *)
+(* Whenever we reach an anonymous function, we increase all the indexes in map, and map 0 to *)
+(* the function's argument variable. *)
+(* Whenever we reach a recursive function definition, we create two map contexts. For the body *)
+(* of the function, we increase all the indexes in map by 2 and map 0 to the function name, 1 to the function *)
+(* argument variable. For the scope in which the function is used, we only increase the indexes in map *)
+(* by 1, and map 0 to the function name. *)
+(* For all other expression types, we recursively descend into their subtrees. *)
 let rec updateDeBruijnIndexesWithVarMap map ast =
     let f = updateDeBruijnIndexesWithVarMap in
     match ast with
@@ -41,6 +53,8 @@ let constToDBE = function
     | Bool b -> DeBruijnExpression.Bool b
     | Var(s,i) -> DeBruijnExpression.Var i;;
 
+(* A convenient function that starts by computing De Bruijn indexes, then drops *)
+(* variables names in the abstract tree *)
 let raw2dbe ast =
     let astWithDBI = updateDeBruijnIndexes ast in
     let rec toDBE = function
