@@ -24,6 +24,7 @@ let interpretBinOpWithState state op v1 v2 =
     let c1 = constValueAsPrimary state v1
     and c2 = constValueAsPrimary state v2 in
     match c1,c2 with
+    | Int i, Int j when is_comparator_op op -> ConstVal(Bool (interpretIntBinCompareOp op i j))
     | Int i, Int j -> ConstVal(Int (interpretIntBinOp op i j))
     | Bool i, Bool j -> ConstVal(Bool (interpretBoolBinOp op i j))
     | _ -> raise(failwith "Non homogeneous operation")
@@ -45,7 +46,7 @@ let interpret_DBE (p:expression) : value =
             let value = interpretWithState state e2 in
             begin
             match f with
-            | FunVal(Expression.DBE body) -> interpretWithState (value::state) body
+            | FunVal(Expression.DBE body) as f -> interpretWithState (f::value::state) body
             | _ -> raise(failwith "Cannot evaluate an element that is not a function")
             end
         | Binary(op,e1,e2) ->
