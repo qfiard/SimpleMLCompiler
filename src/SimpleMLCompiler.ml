@@ -82,6 +82,9 @@ printf "Input program :\n";
 print_file file;
 printf "\n\n";
 let p = compile file in
+printf "Infering expression type...\n";
+let t = TypeInferer.inferType p in
+outputType t;
 printf "Interpreting program...\n";
 let v = interpret p in
 printf "Result : \n";

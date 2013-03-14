@@ -2,6 +2,7 @@ open ML_syntax;;
 open Printf;;
 open Types;;
 open Expression;;
+open Char;;
 
 let op_to_string = function
     | Plus -> "+"
@@ -85,6 +86,7 @@ and output_eval indent e1 e2 =
         printf " ";
     | _ -> outputWithParen indent e1;
     end;
+    printf " ";
     match e2 with
     | Const c2 ->
         print_const c2;
@@ -130,3 +132,36 @@ let print_dbe_const = function
 let outputValue = function
     | Interpreter.ConstVal c -> print_dbe_const c
     | Interpreter.FunVal f -> printf "Function : "; outputProgram f;;
+
+let outputType t =
+    let rec outputTypeAux = function
+    | IntType -> printf "int"
+    | BoolType -> printf "bool"
+    | GenericType i ->
+        printf "'";
+        print_char(chr ((code 'a')+i))
+    | FunType(FunType(t1,t2),FunType(t3,t4)) ->
+        printf "(";
+        outputTypeAux(FunType(t1,t2));
+        printf ") -> (";
+        outputTypeAux(FunType(t3,t4));
+        printf ")";
+    | FunType(FunType(t1,t2),t3) ->
+        printf "(";
+        outputTypeAux(FunType(t1,t2));
+        printf ") -> ";
+        outputTypeAux(t3);
+    | FunType(t1,FunType(t3,t4)) ->
+        outputTypeAux(t1);
+        printf " -> (";
+        outputTypeAux(FunType(t3,t4));
+        printf ")";
+    | FunType(t1,t2) ->
+        outputTypeAux(t1);
+        printf " -> ";
+        outputTypeAux(t2);
+    
+    in
+    printf "Type : ";
+    outputTypeAux t;
+    printf "\n";;

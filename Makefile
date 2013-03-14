@@ -6,6 +6,10 @@ all:
 
 test: all
 	-@./runTests
+
+debug: all
+	-@./runDebugTests
+
 clean:
 	-@rm -rf src/_build 2>/dev/null; \
 	rm *.native 2>/dev/null; \
