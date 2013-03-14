@@ -20,6 +20,7 @@ rule token = parse
   | "rec" { REC }
   | "fun" { FUN }
   | "->" { ARROW }
+  | "==" { EQ }
   | "=" { ASSIGN }
   | "+" { PLUS }
   | "-" { MINUS }
@@ -32,7 +33,6 @@ rule token = parse
   | "if" { IF }
   | "then" { THEN }
   | "else" { ELSE }
-  | "==" { EQ }
   | "!=" { NEQ }
   | "<=" { LE }
   | "<" { LT }

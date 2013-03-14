@@ -24,7 +24,6 @@ let print_file f : unit =
             aux_print_file f false
         with eof ->
             () in
-            
     aux_print_file f true;
     seek_in f 0 in
     

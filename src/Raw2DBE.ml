@@ -59,7 +59,7 @@ let raw2dbe ast =
     let astWithDBI = updateDeBruijnIndexes ast in
     let rec toDBE = function
         | Local(s,e,scope) -> DeBruijnExpression.Local(toDBE e,toDBE scope)
-        | RecFun(f,arg,body,scope) -> DeBruijnExpression.Local(toDBE body,toDBE scope)
+        | RecFun(f,arg,body,scope) -> DeBruijnExpression.RecFun(toDBE body,toDBE scope)
         | Fun(arg,body) -> DeBruijnExpression.Fun(toDBE body)
         | Eval(e1,e2) -> DeBruijnExpression.Eval(toDBE e1,toDBE e2)
         | Binary(op,e1,e2) -> DeBruijnExpression.Binary(op,toDBE e1,toDBE e2)

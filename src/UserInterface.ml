@@ -10,7 +10,13 @@ let op_to_string = function
     | Times -> "*"
     | Div -> "/"
     | And -> "&&"
-    | Or -> "||";;
+    | Or -> "||"
+    | Eq -> "=="
+    | Neq -> "!="
+    | Ge -> ">="
+    | Gt -> ">"
+    | Le -> "<="
+    | Lt -> "<";;
 
 let print_var = function
     | (s,i) -> printf "(%s,%d)" s i
@@ -144,7 +150,7 @@ let outputProgram p =
     printf "Compiled program :\n";
     begin
     match p with
-    | Raw e -> outputProgramWithIndentLevel "" e
+    | Raw e ->  outputProgramWithIndentLevel "" (Raw2DBE.updateDeBruijnIndexes e)
     | DBE e -> printf "DBE expression"
     | Code e -> outputInstructionList "" e
     end;
