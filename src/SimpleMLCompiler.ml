@@ -90,3 +90,5 @@ let v = interpret p in
 printf "Result : \n";
 outputValue v;
 printf "\n\n";
+
+AbstractMachine.run([],[],[],[])
