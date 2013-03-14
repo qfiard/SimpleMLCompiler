@@ -14,7 +14,7 @@ let parse_error s = (* Called by the parser function on error *)
 %}
 
 %token LPAREN RPAREN
-%token AND OR PLUS MINUS TIMES DIV
+%token AND OR PLUS MINUS TIMES DIV EQ NEQ LE GE LT GT
 
 %token <string> ID
 %token <int> INT
@@ -22,17 +22,18 @@ let parse_error s = (* Called by the parser function on error *)
 
 %token FUNCTION_CALL
 
-%token LET REC EQ IN FUN ARROW
+%token LET REC ASSIGN IN FUN ARROW
 %token IF THEN ELSE
 %token EOF
 
-%nonassoc LET REC EQ IN FUN ARROW
+%nonassoc LET REC ASSIGN IN FUN ARROW
 %nonassoc ID INT BOOL
+%nonassoc IF THEN ELSE
 %right FUNCTION_CALL
 %left AND OR
+%nonassoc EQ NEQ LE GE LT GT
 %left PLUS MINUS
 %left TIMES DIV
-%nonassoc IF THEN ELSE
 %nonassoc LPAREN RPAREN
 
 %start program
@@ -61,8 +62,8 @@ expression:
   | if_expression { $1 }
   | leaf_node { $1 }
   | FUN ID ARROW expression  { Fun($2,$4) }
-  | LET REC ID ID EQ expression IN expression { RecFun($3,$4,$6,$8) }
-  | LET ID EQ expression IN expression { Local($2,$4,$6) }
+  | LET REC ID ID ASSIGN expression IN expression { RecFun($3,$4,$6,$8) }
+  | LET ID ASSIGN expression IN expression { Local($2,$4,$6) }
   | function_call { $1 }
   | expression_with_parentheses { $1 }
   | expression PLUS expression { Binary(Plus,$1,$3) }
@@ -71,3 +72,9 @@ expression:
   | expression DIV expression { Binary(Div,$1,$3) }
   | expression AND expression { Binary(And,$1,$3) }
   | expression OR expression { Binary(Or,$1,$3) }
+  | expression EQ expression { Binary(Eq,$1,$3) }
+  | expression NEQ expression { Binary(Neq,$1,$3) }
+  | expression LE expression { Binary(Le,$1,$3) }
+  | expression LT expression { Binary(Lt,$1,$3) }
+  | expression GE expression { Binary(Ge,$1,$3) }
+  | expression GT expression { Binary(Gt,$1,$3) }

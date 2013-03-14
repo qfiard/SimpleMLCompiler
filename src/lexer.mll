@@ -8,7 +8,7 @@ let non_digit = ['a'-'z' 'A'-'Z' '_']
 
 let blank = [' ' '\t' '\n']
 
-let int = '-' ? digit+
+let int = digit+
 let identifier = non_digit (digit | non_digit)*
 
 rule token = parse
@@ -20,7 +20,7 @@ rule token = parse
   | "rec" { REC }
   | "fun" { FUN }
   | "->" { ARROW }
-  | "=" { EQ }
+  | "=" { ASSIGN }
   | "+" { PLUS }
   | "-" { MINUS }
   | "*" { TIMES }
@@ -32,6 +32,12 @@ rule token = parse
   | "if" { IF }
   | "then" { THEN }
   | "else" { ELSE }
+  | "==" { EQ }
+  | "!=" { NEQ }
+  | "<=" { LE }
+  | "<" { LT }
+  | ">=" { GE }
+  | ">" { GT }
   | eof  { EOF }
   | blank { token lexbuf } (* ignore this token *)
   | identifier as id { ID(id) }
