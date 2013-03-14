@@ -10,4 +10,5 @@ for f in `ls test/*`; do
 #	filename=${basename $f}
 	echo "Running test $f"
 	"./$compiler" $f
+	echo "\n\n"
 done

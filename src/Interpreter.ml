@@ -1,6 +1,7 @@
 open Types;;
 open DeBruijnExpression;;
 open Pervasives;;
+open Utilities;;
 
 type value = ConstVal of const | FunVal of Expression.expression
 type state = value list
@@ -18,19 +19,6 @@ let rec constValueAsPrimary state = function
     | ConstVal(Var i) when List.length state > i -> constValueAsPrimary state (List.nth state i)
     | ConstVal(Var i) -> raise(failwith "Variable is not defined")
     | _ -> raise(failwith "Tried to gather a primary value from a function definition")
-
-let interpretIntBinOp op i j = match op with
-    | Plus -> i+j
-    | Minus -> i-j
-    | Times -> i*j
-    | Div when j!=0 -> i/j
-    | Div -> raise(failwith "Division by 0")
-    | _ -> raise(failwith "Invalid operation on integers")
-
-let interpretBoolBinOp op i j = match op with
-    | And -> i && j
-    | Or -> i || j
-    | _ -> raise(failwith "Invalid operation on booleans")
 
 let interpretBinOpWithState state op v1 v2 =
     let c1 = constValueAsPrimary state v1

@@ -61,6 +61,24 @@ let pass2 = function
     | e -> e
     in
     
+(* Pass 3 *)
+(* We check that the program is well typed using type inference provided by Hindley-Milner algorithm *)
+let pass3 expr = 
+    printf "Infering expression type...\n";
+    let t = TypeInferer.inferType expr in
+    outputType t;
+    printf "\n";
+    expr in
+    
+(* Pass 4 *)
+(* We convert the program to abstract machine code *)
+let pass4 = function
+    | DBE e ->
+        printf "Converting the program to abstract machine code...\n";
+        Code (DBE2Code.dbe2code e)
+    | e -> e
+    in
+    
 (* The compilation function itself *)
 (* It is formed of a first pass where we read the file, transform it into a flow of token, then parse that flow *)
 (* and a second pass where we apply several transformations on the abstract tree expression. *)
@@ -72,6 +90,22 @@ let compile file =
     outputProgram !ast;
     printf "\n\n";
     ast := pass2 !ast;
+    
+    (* We check that the program is well typed *)
+    ast := pass3 !ast;
+    
+    (* We run the interpreter on the program while it is in DBE form *)
+    printf "Interpreting program...\n";
+    let v = interpret !ast in
+    printf "Result : ";
+    outputValue v;
+    printf "\n";
+    
+    (* We convert the program to abstract machine code *)
+    ast := pass4 !ast;
+    outputProgram !ast;
+    
+    
     !ast in
 
 (* The compiler body *)
@@ -82,13 +116,12 @@ printf "Input program :\n";
 print_file file;
 printf "\n\n";
 let p = compile file in
-printf "Infering expression type...\n";
-let t = TypeInferer.inferType p in
-outputType t;
-printf "Interpreting program...\n";
-let v = interpret p in
-printf "Result : \n";
-outputValue v;
-printf "\n\n";
-
-AbstractMachine.run([],[],[],[])
+match p with
+| Code c ->
+    printf "Running program on abstract machine...\n";
+    let state = AbstractMachine.createInitialState c in
+    let res = AbstractMachine.run state in
+    printf "Result : ";
+    outputAbstractMachineValue res;
+    printf "\n"
+| _ -> ();

@@ -116,22 +116,49 @@ and output_cond indent cond e1 e2 =
     outputProgramWithIndentLevel incr_indent e2;
     printf "\n%send" indent;;
 
+let outputAbstractMachineValue = function
+    | AbstractMachine.Int i -> printf "Integer %d" i;
+    | AbstractMachine.Bool true -> printf "Boolean true";
+    | AbstractMachine.Bool false -> printf "Boolean false";
+    | _ -> printf "Closure"
+
+let rec outputInstruction indent = function
+    | AbstractMachine.Access i -> printf "%sAccess %d" indent i
+    | AbstractMachine.Apply -> printf "%sApply" indent
+    | AbstractMachine.Cur l ->
+        printf "%sCur\n" indent;
+        outputInstructionList (indent^"\t") l;
+    | AbstractMachine.Return -> printf "%sReturn" indent
+    | AbstractMachine.Let -> printf "%sLet" indent
+    | AbstractMachine.Endlet -> printf "%sEndlet" indent
+    | AbstractMachine.Branchneg n -> printf "%sBranchneg %d" indent n
+    | AbstractMachine.Branch n -> printf "%sBranch %d" indent n
+    | AbstractMachine.Op op -> printf "%sOp %s" indent (op_to_string op)
+    | AbstractMachine.Push v -> printf "%sPush " indent; outputAbstractMachineValue v
+and outputInstructionList indent = function
+    | [] -> ()
+    | x::[] -> outputInstruction indent x
+    | x::s ->  outputInstruction indent x; printf "\n"; outputInstructionList indent s
+
 let outputProgram p =
     printf "Compiled program :\n";
+    begin
     match p with
     | Raw e -> outputProgramWithIndentLevel "" e
-    | _ -> raise(Failure "Not implemented")
-    printf "\n\n";;
+    | DBE e -> printf "DBE expression"
+    | Code e -> outputInstructionList "" e
+    end;
+    printf "\n\n"
 
 let print_dbe_const = function
-    | DeBruijnExpression.Int c -> printf "Integer : %d" c
-    | DeBruijnExpression.Bool true -> printf "Boolean : true"
-    | DeBruijnExpression.Bool false -> printf "Boolean : false"
-    | DeBruijnExpression.Var v -> printf "Variable : %d" v;;
+    | DeBruijnExpression.Int c -> printf "Integer %d" c
+    | DeBruijnExpression.Bool true -> printf "Boolean true"
+    | DeBruijnExpression.Bool false -> printf "Boolean false"
+    | DeBruijnExpression.Var v -> printf "Variable %d" v
 
 let outputValue = function
     | Interpreter.ConstVal c -> print_dbe_const c
-    | Interpreter.FunVal f -> printf "Function : "; outputProgram f;;
+    | Interpreter.FunVal f -> printf "Function : "; outputProgram f
 
 let outputType t =
     let rec outputTypeAux = function
@@ -164,4 +191,4 @@ let outputType t =
     in
     printf "Type : ";
     outputTypeAux t;
-    printf "\n";;
+    printf "\n"
