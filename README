@@ -27,7 +27,7 @@ The compiler is at the time being able to :
       way
 
 TODO :
-    - Implement expressions with side effects
+ DONE Implement expressions with side effects
     - Add support for a data type that supports couples
     - Implement a heap and heap allocation
 
