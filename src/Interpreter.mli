@@ -1,6 +1,6 @@
 open Types
 
-type value = ConstVal of DeBruijnExpression.const | FunVal of Expression.expression
+type value = ConstVal of DeBruijnExpression.const | FunVal of Expression.expression | RecFunVal of Expression.expression
 type state = value list
 
 val interpret_DBE : DeBruijnExpression.expression -> value

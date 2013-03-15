@@ -3,7 +3,7 @@ open DeBruijnExpression;;
 open Pervasives;;
 open Utilities;;
 
-type value = ConstVal of const | FunVal of Expression.expression
+type value = ConstVal of const | FunVal of Expression.expression | RecFunVal of Expression.expression
 type state = value list
 
 let rec constValue state = function
@@ -37,7 +37,7 @@ let interpret_DBE (p:expression) : value =
             let value = interpretWithState state e in
             interpretWithState (value::state) scope
         | RecFun(body,scope) ->
-            let f_value = FunVal (Expression.DBE body) in
+            let f_value = RecFunVal (Expression.DBE body) in
             interpretWithState (f_value::state) scope
         | Fun(body) ->
             FunVal (Expression.DBE body)
@@ -46,7 +46,8 @@ let interpret_DBE (p:expression) : value =
             let value = interpretWithState state e2 in
             begin
             match f with
-            | FunVal(Expression.DBE body) as f -> interpretWithState (f::value::state) body
+            | FunVal(Expression.DBE body) as f -> interpretWithState (value::state) body
+            | RecFunVal(Expression.DBE body) as f -> interpretWithState (f::value::state) body
             | _ -> raise(failwith "Cannot evaluate an element that is not a function")
             end
         | Binary(op,e1,e2) ->

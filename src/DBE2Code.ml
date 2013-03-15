@@ -3,12 +3,16 @@ open List
 
 open AbstractMachine
 
-let rec dbe2code = function
+let rec dbe2code =  function
     | DeBruijnExpression.Local(e,scope) ->
         let value = dbe2code e in
         let scope = dbe2code scope in
         value@(Let::scope)
-    | DeBruijnExpression.RecFun(body,scope) -> raise(failwith "Not implemented")
+    | DeBruijnExpression.RecFun(body,scope) ->
+        let body = dbe2code body in
+        let body = (Let::(Access 0)::body)@(Endlet::Return::[]) in
+        let scope = dbe2code scope in
+        (Cur body)::Let::(Access 0)::scope;
     | DeBruijnExpression.Fun(body) ->
         let body = dbe2code body in
         (Cur body)::[]
@@ -25,7 +29,7 @@ let rec dbe2code = function
         let e1 = dbe2code e1 in
         let e2 = dbe2code e2 in
         let n1 = length e1 in
-        let n2 = length e1 in
+        let n2 = length e2 in
         cond@((Branchneg (n1+1))::e1)@((Branch n2)::e2)
     | DeBruijnExpression.Const(DeBruijnExpression.Int i) -> [Push(Int i)]
     | DeBruijnExpression.Const(DeBruijnExpression.Bool b) -> [Push(Bool b)]

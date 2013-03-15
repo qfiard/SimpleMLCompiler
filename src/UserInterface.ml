@@ -165,6 +165,7 @@ let print_dbe_const = function
 let outputValue = function
     | Interpreter.ConstVal c -> print_dbe_const c
     | Interpreter.FunVal f -> printf "Function : "; outputProgram f
+    | Interpreter.RecFunVal f -> printf "Recursive function : "; outputProgram f
 
 let outputType t =
     let rec outputTypeAux = function
