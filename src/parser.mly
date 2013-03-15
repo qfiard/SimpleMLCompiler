@@ -53,10 +53,10 @@ if_expression:
 leaf_node:
     BOOL  { Const (Bool $1) }
   | INT { Const (Int $1) }
-  | ID { Const (Var ($1,0)) }
+  | ID { Const (Var ($1,-1)) }
 ;
 function_call:
-    ID leaf_node { Eval(Const (Var($1,0)),$2) }
+    ID leaf_node { Eval(Const (Var($1,-1)),$2) }
   | expression expression { Eval($1,$2) } %prec FUNCTION_CALL
 ;
 expression:

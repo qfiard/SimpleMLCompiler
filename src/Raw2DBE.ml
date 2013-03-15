@@ -1,6 +1,7 @@
-open ML_syntax;;
+open ML_syntax
+open Printf
 
-module StringMap = Map.Make(String);;
+module StringMap = Map.Make(String)
 
 (* updateDeBruijnIndexesWithVarMap computes De Bruijn indexes for the variables in ast *)
 (* given the current association between variables and indexes. *)
@@ -43,7 +44,8 @@ let rec updateDeBruijnIndexesWithVarMap map ast =
     | SideEffect(e1,e2) -> SideEffect(f map e1,f map e2)
     | Binary(op,e1,e2) -> Binary(op,f map e1,f map e2)
     | If(cond,e1,e2) -> If(f map cond,f map e1,f map e2)
-    | Const (Var(v,i)) when not(StringMap.mem v map) -> raise (Failure ("Variable "^v^" is not defined"))
+    | Const (Var(v,i)) when not(StringMap.mem v map) && not(List.mem v Types.syscalls) -> raise (Failure ("Variable "^v^" is not defined"))
+    | Const (Var(v,i)) as c when not(StringMap.mem v map) -> c
     | Const (Var(v,i)) -> Const (Var(v,StringMap.find v map))
     | _ as ast -> ast
     
@@ -52,7 +54,8 @@ let updateDeBruijnIndexes ast = updateDeBruijnIndexesWithVarMap (StringMap.empty
 let constToDBE = function
     | Int i -> DeBruijnExpression.Int i
     | Bool b -> DeBruijnExpression.Bool b
-    | Var(s,i) -> DeBruijnExpression.Var i;;
+    | Var(s,i) when i<0 -> DeBruijnExpression.SysCall(s)
+    | Var(s,i) -> DeBruijnExpression.Var i
 
 (* A convenient function that starts by computing De Bruijn indexes, then drops *)
 (* variables names in the abstract tree *)

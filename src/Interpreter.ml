@@ -3,15 +3,28 @@ open DeBruijnExpression
 open Pervasives
 open Utilities
 open Printf
+open UserInterface
 
-type value = ConstVal of const | FunVal of Expression.expression | RecFunVal of Expression.expression | SysCall of string | UnitVal
+type value = ConstVal of const | FunVal of Expression.expression | RecFunVal of Expression.expression | SysCallVal of (value -> unit) | UnitVal
 type state = value list
+
+let outputValue = function
+    | ConstVal c -> print_dbe_const c
+    | FunVal f -> printf "Function : "; outputProgram f
+    | RecFunVal f -> printf "Recursive function : "; outputProgram f
+    | SysCallVal f -> printf "System call"
+    | UnitVal -> printf "Unit"
+
+let sysCallFromString = function
+    | "print" -> outputValue
+    | s -> raise(failwith (sprintf "Unbound system call %s" s))
 
 let rec constValue state = function
     | ConstVal(Int i) -> ConstVal(Int i)
     | ConstVal(Bool b) -> ConstVal(Bool b)
     | ConstVal(Var i) when List.length state > i -> constValue state (List.nth state i)
     | ConstVal(Var i) -> raise(failwith "Variable is not defined")
+    | ConstVal(SysCall s) -> SysCallVal(sysCallFromString s)
     | _ as c -> c
 
 let rec constValueAsPrimary state = function
@@ -29,17 +42,6 @@ let interpretBinOpWithState state op v1 v2 =
     | Int i, Int j -> ConstVal(Int (interpretIntBinOp op i j))
     | Bool i, Bool j -> ConstVal(Bool (interpretBoolBinOp op i j))
     | _ -> raise(failwith "Non homogeneous operation")
-
-let outputValue = function
-    | ConstVal c -> print_dbe_const c
-    | FunVal f -> printf "Function : "; outputProgram f
-    | RecFunVal f -> printf "Recursive function : "; outputProgram f
-    | SysCall f -> printf "System call %s" f
-    | UnitVal -> printf "Unit"
-
-let sysCallFromString = function
-    | "print" -> outputValue
-    | s -> raise(failwith (sprintf "Unknown system call %s " s))
 
 (* interpret_DBE is able to interpret a program represented as an expression *)
 (* of type DeBruijnExpression.expression *)
@@ -60,7 +62,7 @@ let interpret_DBE (p:expression) : value =
             match f with
             | FunVal(Expression.DBE body) -> interpretWithState (value::state) body
             | RecFunVal(Expression.DBE body) as f -> interpretWithState (f::value::state) body
-            | SysCall s -> (sysCallFromString s) value
+            | SysCallVal s -> s value; UnitVal
             | _ -> raise(failwith "Cannot evaluate an element that is not a function")
             end
         | SideEffect(e1,e2) ->

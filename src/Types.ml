@@ -19,6 +19,8 @@ let is_comparator_op = function
     | Ge -> true
     | _ -> false
 
+let syscalls = ["print"]
+
 type dbindex = int
 
 (* Definition of the types that expressions are allowed to bear *)
