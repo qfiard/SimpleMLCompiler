@@ -5,7 +5,7 @@ open Printf
 
 exception NoMoreInstructions
 
-type value = Int of int | Bool of bool | Closure of code*environment
+type value = Int of int | Bool of bool | Unit | Closure of code*environment
 and environment = value list
 and stack = value list
 and instruction =

@@ -3,7 +3,7 @@ open Printf
 
 type var = dbindex
 
-type const = Int of int | Bool of bool | Var of var | SysCall of string
+type const = Int of int | Bool of bool | Var of var | SysCall of string | Unit
 
 type expression =
     (* Local variable definition *)
@@ -36,3 +36,4 @@ let print_dbe_const = function
     | Bool false -> printf "Boolean false"
     | Var v -> printf "Variable %d" v
     | SysCall s -> printf "SysCall %s" s
+    | Unit -> printf "Unit"

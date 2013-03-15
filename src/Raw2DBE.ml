@@ -56,6 +56,7 @@ let constToDBE = function
     | Bool b -> DeBruijnExpression.Bool b
     | Var(s,i) when i<0 -> DeBruijnExpression.SysCall(s)
     | Var(s,i) -> DeBruijnExpression.Var i
+    | Unit -> DeBruijnExpression.Unit
 
 (* A convenient function that starts by computing De Bruijn indexes, then drops *)
 (* variables names in the abstract tree *)

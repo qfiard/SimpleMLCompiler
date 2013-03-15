@@ -28,7 +28,8 @@ let print_const = function
     | Int c -> printf "%d" c
     | Bool true -> printf "true"
     | Bool false -> printf "false"
-    | Var v -> print_var v;;
+    | Var v -> print_var v
+    | Unit -> printf "()"
 
 let rec outputProgramWithIndentLevel indent = function
     | Local(s,e,scope) ->
@@ -132,6 +133,7 @@ let outputAbstractMachineValue = function
     | AbstractMachine.Int i -> printf "Integer %d" i;
     | AbstractMachine.Bool true -> printf "Boolean true";
     | AbstractMachine.Bool false -> printf "Boolean false";
+    | AbstractMachine.Unit -> printf "Unit";
     | _ -> printf "Closure"
 
 let rec outputInstruction indent = function
@@ -161,36 +163,3 @@ let outputProgram p =
     | Code e -> outputInstructionList "" e
     end;
     printf "\n\n"
-
-let outputType t =
-    let rec outputTypeAux = function
-    | IntType -> printf "int"
-    | BoolType -> printf "bool"
-    | GenericType i ->
-        printf "'";
-        print_char(chr ((code 'a')+i))
-    | FunType(FunType(t1,t2),FunType(t3,t4)) ->
-        printf "(";
-        outputTypeAux(FunType(t1,t2));
-        printf ") -> (";
-        outputTypeAux(FunType(t3,t4));
-        printf ")";
-    | FunType(FunType(t1,t2),t3) ->
-        printf "(";
-        outputTypeAux(FunType(t1,t2));
-        printf ") -> ";
-        outputTypeAux(t3);
-    | FunType(t1,FunType(t3,t4)) ->
-        outputTypeAux(t1);
-        printf " -> (";
-        outputTypeAux(FunType(t3,t4));
-        printf ")";
-    | FunType(t1,t2) ->
-        outputTypeAux(t1);
-        printf " -> ";
-        outputTypeAux(t2);
-    
-    in
-    printf "Type : ";
-    outputTypeAux t;
-    printf "\n"

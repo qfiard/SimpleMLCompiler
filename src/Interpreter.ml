@@ -17,6 +17,7 @@ let outputValue = function
 
 let sysCallFromString = function
     | "print" -> outputValue
+    | "print_newline" -> (fun x -> print_newline())
     | s -> raise(failwith (sprintf "Unbound system call %s" s))
 
 let rec constValue state = function
@@ -25,6 +26,7 @@ let rec constValue state = function
     | ConstVal(Var i) when List.length state > i -> constValue state (List.nth state i)
     | ConstVal(Var i) -> raise(failwith "Variable is not defined")
     | ConstVal(SysCall s) -> SysCallVal(sysCallFromString s)
+    | ConstVal(Unit) -> UnitVal
     | _ as c -> c
 
 let rec constValueAsPrimary state = function
@@ -32,6 +34,7 @@ let rec constValueAsPrimary state = function
     | ConstVal(Bool b) -> Bool b
     | ConstVal(Var i) when List.length state > i -> constValueAsPrimary state (List.nth state i)
     | ConstVal(Var i) -> raise(failwith "Variable is not defined")
+    | ConstVal(Unit) -> Unit
     | _ -> raise(failwith "Tried to gather a primary value from a function definition")
 
 let interpretBinOpWithState state op v1 v2 =

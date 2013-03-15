@@ -10,41 +10,6 @@ open Char
 (* given type constraints due to operations *)
 
 let notWellTyped() = raise(failwith "Expression is not well-typed")
-
-
-
-let outputType t =
-    let rec outputTypeAux = function
-    | IntType -> printf "int"
-    | BoolType -> printf "bool"
-    | GenericType i ->
-        printf "'";
-        print_char(chr ((code 'a')+i))
-    | FunType(FunType(t1,t2),FunType(t3,t4)) ->
-        printf "(";
-        outputTypeAux(FunType(t1,t2));
-        printf ") -> (";
-        outputTypeAux(FunType(t3,t4));
-        printf ")";
-    | FunType(FunType(t1,t2),t3) ->
-        printf "(";
-        outputTypeAux(FunType(t1,t2));
-        printf ") -> ";
-        outputTypeAux(t3);
-    | FunType(t1,FunType(t3,t4)) ->
-        outputTypeAux(t1);
-        printf " -> (";
-        outputTypeAux(FunType(t3,t4));
-        printf ")";
-    | FunType(t1,t2) ->
-        outputTypeAux(t1);
-        printf " -> ";
-        outputTypeAux(t2);
-    
-    in
-    printf "Type : ";
-    outputTypeAux t;
-    printf "\n"
     
 let outputEnvironment e =
     let rec aux = function
@@ -185,6 +150,9 @@ let rec inferTypeWithEnv env index e = match e with
     | Const(Bool b) -> BoolType,env,index
     | Const(Var i) when i> (length env)-1 -> raise(failwith "Undefined variable encountered")
     | Const(Var i) -> nth env i,env,index
+    | Const(Unit) -> UnitType,env,index
+    | Const(SysCall v) ->
+        FunType(GenericType index,UnitType),env,(index+1)
     | _ -> raise(failwith "Unknown pattern")
 
 let inferType = function

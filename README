@@ -26,8 +26,9 @@ The compiler is at the time being able to :
       instructions, and thus interpret the program in a more efficient
       way
 
+ DONE Implement expressions with side effects  
+   Note : unit types have also been implemented
 TODO :
- DONE Implement expressions with side effects
     - Add support for a data type that supports couples
     - Implement a heap and heap allocation
 

@@ -35,4 +35,6 @@ let rec dbe2code =  function
     | DeBruijnExpression.Const(DeBruijnExpression.Int i) -> [Push(Int i)]
     | DeBruijnExpression.Const(DeBruijnExpression.Bool b) -> [Push(Bool b)]
     | DeBruijnExpression.Const(DeBruijnExpression.Var i) -> [Access i]
+    | DeBruijnExpression.Const(DeBruijnExpression.Unit) -> [Push Unit]
+    | DeBruijnExpression.Const(DeBruijnExpression.SysCall v) -> [Cur [Push Unit]]
     | _ -> raise(failwith "Unknown pattern")

@@ -45,7 +45,8 @@ program:
     expression EOF { Raw $1 }
 ;
 expression_with_parentheses:
-    LPAREN expression RPAREN { $2 }
+    LPAREN RPAREN { Const (Unit) }
+  | LPAREN expression RPAREN { $2 }
 ;
 if_expression:
     IF expression THEN expression ELSE expression { If($2,$4,$6) }

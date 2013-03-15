@@ -2,7 +2,7 @@ open Types
 
 type var = string*dbindex
 
-type const = Int of int | Bool of bool | Var of var
+type const = Int of int | Bool of bool | Var of var | Unit
 
 type expression =
     (* Local variable definition *)
