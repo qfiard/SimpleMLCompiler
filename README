@@ -15,15 +15,21 @@ How to use :
 build the compiler, make test to run the compiler on the provided set of tests
 located in the test folder.
 
-  The compiler is at the time being able to parse the subset of the ML syntax
-that was chosen for this project, to transform it into an abstract tree where
-variables are represented by the De Bruijn indexes, and to interpret the program
-to output its result.
+The compiler is at the time being able to : 
+    - parse the subset of the ML syntax that was chosen for this project
+    - transform it into an abstract tree where variables are represented 
+      by De Bruijn indexes
+    - interpret the program to output its result
+    - transform the abstract syntax tree into a sequence of instructions
+      understandable by a stack abstract machine
+    - simulate the abstract machine semantics to run the sequence of
+      instructions, and thus interpret the program in a more efficient
+      way
 
-  I am currently working on the implementation of a type system for this subset of ML
-and on the transformation of the resulting abstract tree to an expression that can
-be interpreted by the abstract machine described on the project page. I expect to
-have finished these implementation on the day of the final submission.
+TODO :
+    - Implement expressions with side effects
+    - Add support for a data type that supports couples
+    - Implement a heap and heap allocation
 
 Notes :
   * Automatic compilation requires ocamlfind from findlib
