@@ -39,6 +39,8 @@ let rec outputProgramWithIndentLevel indent = function
         output_fun indent indent arg body
     | Eval(e1,e2) ->
         output_eval indent e1 e2
+    | SideEffect(e1,e2) ->
+        output_side_effect indent e1 e2
     | Binary(op,e1,e2) ->
         output_binary indent op e1 e2
     | If(cond,e1,e2) ->
@@ -97,6 +99,10 @@ and output_eval indent e1 e2 =
     | Const c2 ->
         print_const c2;
     | _ -> outputWithParen indent e2
+and output_side_effect indent e1 e2 =
+    outputProgramWithIndentLevel indent e1;
+    printf ";\n";
+    outputProgramWithIndentLevel indent e2
 and output_binary indent op e1 e2 =
     printf "%s" indent;
     begin
@@ -155,17 +161,6 @@ let outputProgram p =
     | Code e -> outputInstructionList "" e
     end;
     printf "\n\n"
-
-let print_dbe_const = function
-    | DeBruijnExpression.Int c -> printf "Integer %d" c
-    | DeBruijnExpression.Bool true -> printf "Boolean true"
-    | DeBruijnExpression.Bool false -> printf "Boolean false"
-    | DeBruijnExpression.Var v -> printf "Variable %d" v
-
-let outputValue = function
-    | Interpreter.ConstVal c -> print_dbe_const c
-    | Interpreter.FunVal f -> printf "Function : "; outputProgram f
-    | Interpreter.RecFunVal f -> printf "Recursive function : "; outputProgram f
 
 let outputType t =
     let rec outputTypeAux = function

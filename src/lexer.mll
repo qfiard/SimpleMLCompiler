@@ -38,6 +38,7 @@ rule token = parse
   | "<" { LT }
   | ">=" { GE }
   | ">" { GT }
+  | ";" { SEMICOLON }
   | eof  { EOF }
   | blank { token lexbuf } (* ignore this token *)
   | identifier as id { ID(id) }

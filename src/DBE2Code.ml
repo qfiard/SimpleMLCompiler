@@ -20,6 +20,7 @@ let rec dbe2code =  function
         let e1 = dbe2code e1 in
         let e2 = dbe2code e2 in
         e2@e1@[Apply]
+    | DeBruijnExpression.SideEffect(e1,e2) -> dbe2code e2 (* We have to skip the side effect as no side effect is allowed by the abstract machine *)
     | DeBruijnExpression.Binary(op,e1,e2) ->
         let e1 = dbe2code e1 in
         let e2 = dbe2code e2 in

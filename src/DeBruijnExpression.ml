@@ -1,4 +1,5 @@
-open Types;;
+open Types
+open Printf
 
 type var = dbindex
 
@@ -16,6 +17,9 @@ type expression =
     (* Functional evaluation *)
     | Eval of    expression         (* Function *)
              *   expression         (* Argument *)
+    (* Side effect *)
+    | SideEffect of    expression         (* Side effect *)
+                   *   expression         (* Result *)
     (* Binary operation *)
     | Binary of    op               (* Operator *)
                  * expression       (* First operand *)
@@ -25,3 +29,9 @@ type expression =
                  * expression       (* Executed if condition is true *)
                  * expression       (* Executed if condition is false *)
     | Const of const                (* Constant *)
+
+let print_dbe_const = function
+    | Int c -> printf "Integer %d" c
+    | Bool true -> printf "Boolean true"
+    | Bool false -> printf "Boolean false"
+    | Var v -> printf "Variable %d" v

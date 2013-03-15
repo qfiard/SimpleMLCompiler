@@ -153,6 +153,8 @@ let rec inferTypeWithEnv env index e = match e with
         let type2,newEnv2,index = inferTypeWithEnv env index e2 in
         let newEnv = mergeEnv newEnv1 newEnv2 in
         computeTypeForEval type1 type2 newEnv index
+    | SideEffect(e1,e2) ->
+        inferTypeWithEnv env index e2
     | Binary(op,e1,e2) ->
         let type1,newEnv1,index = inferTypeWithEnv env index e1 in
         let type2,newEnv2,index = inferTypeWithEnv env index e2 in

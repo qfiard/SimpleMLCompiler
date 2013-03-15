@@ -14,7 +14,7 @@ let parse_error s = (* Called by the parser function on error *)
 %}
 
 %token LPAREN RPAREN
-%token AND OR PLUS MINUS TIMES DIV EQ NEQ LE GE LT GT
+%token AND OR PLUS MINUS TIMES DIV EQ NEQ LE GE LT GT SEMICOLON
 
 %token <string> ID
 %token <int> INT
@@ -26,6 +26,7 @@ let parse_error s = (* Called by the parser function on error *)
 %token IF THEN ELSE
 %token EOF
 
+%left SEMICOLON
 %nonassoc LET REC ASSIGN IN FUN ARROW
 %nonassoc ID INT BOOL
 %nonassoc IF THEN ELSE
@@ -64,6 +65,7 @@ expression:
   | FUN ID ARROW expression  { Fun($2,$4) }
   | LET REC ID ID ASSIGN expression IN expression { RecFun($3,$4,$6,$8) }
   | LET ID ASSIGN expression IN expression { Local($2,$4,$6) }
+  | expression SEMICOLON expression { SideEffect($1,$3) }
   | function_call { $1 }
   | expression_with_parentheses { $1 }
   | expression PLUS expression { Binary(Plus,$1,$3) }

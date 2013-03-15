@@ -1,9 +1,10 @@
-open Types;;
-open DeBruijnExpression;;
-open Pervasives;;
-open Utilities;;
+open Types
+open DeBruijnExpression
+open Pervasives
+open Utilities
+open Printf
 
-type value = ConstVal of const | FunVal of Expression.expression | RecFunVal of Expression.expression
+type value = ConstVal of const | FunVal of Expression.expression | RecFunVal of Expression.expression | SysCall of string | UnitVal
 type state = value list
 
 let rec constValue state = function
@@ -29,6 +30,17 @@ let interpretBinOpWithState state op v1 v2 =
     | Bool i, Bool j -> ConstVal(Bool (interpretBoolBinOp op i j))
     | _ -> raise(failwith "Non homogeneous operation")
 
+let outputValue = function
+    | ConstVal c -> print_dbe_const c
+    | FunVal f -> printf "Function : "; outputProgram f
+    | RecFunVal f -> printf "Recursive function : "; outputProgram f
+    | SysCall f -> printf "System call %s" f
+    | UnitVal -> printf "Unit"
+
+let sysCallFromString = function
+    | "print" -> outputValue
+    | s -> raise(failwith (sprintf "Unknown system call %s " s))
+
 (* interpret_DBE is able to interpret a program represented as an expression *)
 (* of type DeBruijnExpression.expression *)
 let interpret_DBE (p:expression) : value =
@@ -46,10 +58,14 @@ let interpret_DBE (p:expression) : value =
             let value = interpretWithState state e2 in
             begin
             match f with
-            | FunVal(Expression.DBE body) as f -> interpretWithState (value::state) body
+            | FunVal(Expression.DBE body) -> interpretWithState (value::state) body
             | RecFunVal(Expression.DBE body) as f -> interpretWithState (f::value::state) body
+            | SysCall s -> (sysCallFromString s) value
             | _ -> raise(failwith "Cannot evaluate an element that is not a function")
             end
+        | SideEffect(e1,e2) ->
+            let _ = interpretWithState state e1 in
+            interpretWithState state e2
         | Binary(op,e1,e2) ->
             let val1 = interpretWithState state e1
             and val2 = interpretWithState state e2 in

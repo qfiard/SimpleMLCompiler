@@ -70,4 +70,4 @@ let createInitialState code = code,[],[],[]
 
 let rec run (s:state) = match s with
     | [],e,s,r -> hd s
-    | c,e,st,r -> (List.length st); run (step s)
+    | c,e,st,r -> run (step s)
